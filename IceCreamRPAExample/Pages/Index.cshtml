@@ -1,0 +1,51 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<form method="post">
+    <div class="row">
+        <div class="col-md-3">
+            <h2>Ice Cream Flavors</h2>
+            <div>
+                <label>Flavor 1</label>
+                <input type="text" asp-for="Recipe.IceCream1" />
+            </div>
+            <div>
+                <label>Flavor 2</label>
+                <input type="text" asp-for="Recipe.IceCream2" />
+            </div>
+            <div>
+                <label>Flavor 3</label>
+                <input type="text" asp-for="Recipe.IceCream3" />
+            </div>
+        </div>
+        @if (Model.ShowFlavorCreation)
+        {
+            <div class="col-md-3">
+                <h2>You Created</h2>
+                @if (string.IsNullOrEmpty(Model.FlavorName))
+                {
+                    <label id="lblFlavorName">You created a new flavor</label>
+                }
+                else
+                {
+                    <label id="lblFlavorName">@Model.FlavorName</label>
+                }
+            </div>
+        }
+    </div>
+    <div class="row">
+
+        <div class="col-md-3">
+            <h2>Mix-Ins</h2>
+            <div>
+                <label>Mix-In 1</label>
+                <input type="text" asp-for="Recipe.MixIn1" />
+            </div>
+        </div>
+    </div>
+
+    <input type="submit" value="Submit" style="margin-top:10px;" />
+</form>
