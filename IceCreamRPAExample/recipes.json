@@ -1,0 +1,11 @@
+  [
+    {
+      "name": "Mint Chocolate Chip",
+      "iceCreamFlavors": [ "mint" ],
+      "mixIns": [ "chocolate chips" ]
+    },
+    {
+      "name": "Neopolitan",
+      "iceCreamFlavors": [ "vanilla", "chocolate", "strawberry" ]
+    }
+  ]

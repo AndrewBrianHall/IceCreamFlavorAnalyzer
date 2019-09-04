@@ -1,12 +1,71 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IceCreamRPAExample
 {
+    class LoadedRecipe
+    {
+        public string Name { get; set; }
+        public List<string> IceCreamFlavors { get; set; }
+        public List<string> MixIns { get; set; }
+    }
+
+
     public class RecipeAnalyzer
     {
+        List<string> _icecreamFlavors;
+        List<string> _mixIns;
+        static List<LoadedRecipe> _knownRecipes;
+
+        static RecipeAnalyzer()
+        {
+            string recipeJson;
+            using (var fs = new StreamReader("recipes.json"))
+            {
+                recipeJson = fs.ReadToEnd();
+                _knownRecipes = JsonConvert.DeserializeObject<List<LoadedRecipe>>(recipeJson);
+            }
+        }
+
+        private RecipeAnalyzer(RecipeModel input)
+        {
+            _icecreamFlavors = input.GetIceCreamFlavors();
+            _mixIns = input.GetMixins();
+        }
+
+        bool ContainsFlavor(string flavor)
+        {
+            foreach (string inputFlavor in _icecreamFlavors)
+            {
+                if (!string.IsNullOrEmpty(inputFlavor) && inputFlavor.Equals(flavor, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool ContainsMixIn(string mixin)
+        {
+            foreach (string inputMixin in _mixIns)
+            {
+                if (!string.IsNullOrEmpty(inputMixin) && inputMixin.Equals(mixin, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private int FlavorCount
+        {
+            get => _icecreamFlavors.Count;
+        }
+
         public static string GetRecipeName(RecipeModel inputRecipe)
         {
             RecipeAnalyzer recipe = new RecipeAnalyzer(inputRecipe);
@@ -19,73 +78,63 @@ namespace IceCreamRPAExample
             {
                 return inputRecipe.IceCream1;
             }
-            else if (recipe.IsMintChocolateChip)
+            else if (recipe.IsKnownRecipe(out string recipeName))
             {
-                return "Mint Chocolate Chip";
-            }
-            else if (recipe.IsNeopolitan)
-            {
-                return "Neopolitan";
+                return recipeName;
             }
 
             return null;
         }
 
 
-        private RecipeModel _input;
-
-        private RecipeAnalyzer(RecipeModel input)
+        internal bool IsKnownRecipe(out string recipeName)
         {
-            this._input = input;
-        }
+            recipeName = null;
 
-        private int FlavorCount
-        {
-            get
+            foreach (var recipe in _knownRecipes)
             {
-                int count = 0;
-                count = !string.IsNullOrEmpty(_input.IceCream1) ? count + 1 : count;
-                count = !string.IsNullOrEmpty(_input.IceCream2) ? count + 1 : count;
-                count = !string.IsNullOrEmpty(_input.IceCream3) ? count + 1 : count;
-                return count;
+                bool containsAllFlavors = recipe.IceCreamFlavors.Count == this.FlavorCount;
+                if (containsAllFlavors && this.FlavorCount > 0)
+                {
+                    foreach (string flavor in recipe.IceCreamFlavors)
+                    {
+                        if (!ContainsFlavor(flavor))
+                        {
+                            containsAllFlavors = false;
+                            break;
+                        }
+                    }
+                }
+
+                int recipeMixinCount = recipe.MixIns != null ? recipe.MixIns.Count : 0;
+                bool containsAllMixIns = recipeMixinCount == this.MixInCount;
+
+                if (containsAllMixIns && recipeMixinCount > 0)
+                {
+                    foreach (string mixIn in recipe.MixIns)
+                    {
+                        if (!ContainsMixIn(mixIn))
+                        {
+                            containsAllMixIns = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (containsAllFlavors && containsAllMixIns)
+                {
+                    recipeName = recipe.Name;
+                    return true;
+                }
             }
+
+            return false;
         }
 
         private int MixInCount
         {
-            get
-            {
-                int count = 0;
-                count = !string.IsNullOrEmpty(_input.MixIn1) ? count + 1 : count;
-                count = !string.IsNullOrEmpty(_input.MixIn2) ? count + 1 : count;
-                count = !string.IsNullOrEmpty(_input.MixIn3) ? count + 1 : count;
-                return count;
-            }
+            get => _mixIns.Count;
         }
-
-        bool IsMintChocolateChip
-        {
-            get => this.FlavorCount == 1
-                && _input.IceCream1.Equals("mint", StringComparison.OrdinalIgnoreCase)
-                && this.MixInCount == 1
-                && _input.MixIn1.Equals("chocolate chips", StringComparison.OrdinalIgnoreCase);
-        }
-
-        bool IsNeopolitan
-        {
-            get => this.FlavorCount == 3
-                && ContainsFlavor("chocolate")
-                && ContainsFlavor("vanilla")
-                && ContainsFlavor("strawberry");
-        }
-
-        bool ContainsFlavor(string flavor)
-        {
-            return _input.IceCream1.Equals(flavor, StringComparison.OrdinalIgnoreCase)
-                || _input.IceCream2.Equals(flavor, StringComparison.OrdinalIgnoreCase)
-                || _input.IceCream3.Equals(flavor, StringComparison.OrdinalIgnoreCase);
-        }
-
 
     }
 }
