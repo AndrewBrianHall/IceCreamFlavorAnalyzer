@@ -28,6 +28,25 @@ namespace IceCreamRPAExample.Pages
             await Task.Delay(500);
             this.ShowFlavorCreation = true;
             this.FlavorName = RecipeAnalyzer.GetRecipeName(this.Recipe);
+
+            this.Recipe.IceCream1 = null;
+            this.Recipe.IceCream2 = null;
+            this.Recipe.IceCream3 = null;
+            this.Recipe.MixIn1 = null;
+
+            const string recipeModelName = nameof(this.Recipe);
+            string[] modelFieldsToClear = new string[]
+            {
+                $"{recipeModelName}.{nameof(Recipe.IceCream1)}",
+                $"{recipeModelName}.{nameof(Recipe.IceCream2)}",
+                $"{recipeModelName}.{nameof(Recipe.IceCream3)}",
+                $"{recipeModelName}.{nameof(Recipe.MixIn1)}"
+            };
+
+            foreach (string modelKey in modelFieldsToClear)
+            {
+                this.ModelState[modelKey].RawValue = null;
+            }
         }
     }
 }
