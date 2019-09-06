@@ -23,8 +23,9 @@ namespace IceCreamRPAExample.Pages
 
         }
 
-        public void OnPost()
+        public async Task OnPostAsync()
         {
+            await Task.Delay(500);
             this.ShowFlavorCreation = true;
             this.FlavorName = RecipeAnalyzer.GetRecipeName(this.Recipe);
         }
