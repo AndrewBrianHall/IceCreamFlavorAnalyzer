@@ -14,6 +14,26 @@ namespace IceCreamRPAExample
         public List<string> MixIns { get; set; }
     }
 
+    public class RecipeAnalysis
+    {
+        public bool IsValidRecipe { get; set; }
+        public string RecipeName { get; set; }
+        public List<string> InputIngredients { get; set; } = new List<string>();
+
+        public RecipeAnalysis(List<string> iceCreamFlavors, List<string> mixins)
+        {
+            foreach(string flavor in iceCreamFlavors)
+            {
+                this.InputIngredients.Add($"{flavor} ice cream");
+            }
+            foreach(string mixin in mixins)
+            {
+                this.InputIngredients.Add(mixin);
+            }
+        }
+
+    }
+
 
     public class RecipeAnalyzer
     {
@@ -31,7 +51,7 @@ namespace IceCreamRPAExample
             }
         }
 
-        private RecipeAnalyzer(RecipeModel input)
+        public RecipeAnalyzer(RecipeModel input)
         {
             _icecreamFlavors = input.GetIceCreamFlavors();
             _mixIns = input.GetMixins();
@@ -66,24 +86,34 @@ namespace IceCreamRPAExample
             get => _icecreamFlavors.Count;
         }
 
-        public static string GetRecipeName(RecipeModel inputRecipe)
+        public RecipeAnalysis GetAnalysis()
         {
-            RecipeAnalyzer recipe = new RecipeAnalyzer(inputRecipe);
+            RecipeAnalysis analysis = new RecipeAnalysis(_icecreamFlavors, _mixIns);
+            string recipeName = null;
+            bool isValidRecipe = true;
 
-            if (recipe.FlavorCount == 0)
+            if (this.FlavorCount == 0)
             {
-                return "Must provide at least one ice cream flavor";
+                recipeName = "Must provide at least one ice cream flavor";
+                isValidRecipe = false;
             }
-            else if (recipe.FlavorCount == 1 && recipe.MixInCount == 0)
+            else if (this.FlavorCount == 1 && this.MixInCount == 0)
             {
-                return inputRecipe.IceCream1;
+                recipeName = _icecreamFlavors[0];
             }
-            else if (recipe.IsKnownRecipe(out string recipeName))
+            else if (this.IsKnownRecipe(out string knownName))
             {
-                return recipeName;
+                recipeName = knownName;
+            }
+            else
+            {
+                recipeName = "You created a new flavor";
             }
 
-            return null;
+            analysis.RecipeName = recipeName;
+            analysis.IsValidRecipe = isValidRecipe;
+
+            return analysis;
         }
 
 

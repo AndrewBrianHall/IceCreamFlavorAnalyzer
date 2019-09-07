@@ -8,10 +8,8 @@
     function showSpinner() {
         var progress = document.getElementById('progress_indicator');
         progress.style.visibility = 'visible';
-        var message = document.getElementById('lblFlavorName');
-        if (message !== null) {
-            message.innerText = '';
-        }
+        var message = document.getElementById('message_info');
+        message.style.visibility = "collapse";
     }
 </script>
 
@@ -34,17 +32,25 @@
         </div>
         <div class="col-md-4">
             <h2>Known Flavor?</h2>
-            @if (Model.ShowFlavorCreation)
-            {
-                @if (string.IsNullOrEmpty(Model.FlavorName))
+            <div id="message_info">
+                @if (Model.Analysis != null)
                 {
-                    <label id="lblFlavorName">You created a new flavor</label>
+                    <label id="lblFlavorName">@Model.Analysis.RecipeName</label>
+
+                    @if (Model.Analysis.IsValidRecipe)
+                    {
+                        <div>
+                            Ingredients:
+                            <ul>
+                                @foreach (string ingredient in Model.Analysis.InputIngredients)
+                                {
+                                    <li>@ingredient</li>
+                                }
+                            </ul>
+                        </div>
+                    }
                 }
-                else
-                {
-                    <label id="lblFlavorName">@Model.FlavorName</label>
-                }
-            }
+            </div>
             <br />
             <progress id="progress_indicator" style="visibility: hidden;"></progress>
         </div>

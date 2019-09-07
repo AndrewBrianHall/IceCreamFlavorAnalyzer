@@ -7,5 +7,10 @@
     {
       "name": "Neopolitan",
       "iceCreamFlavors": [ "vanilla", "chocolate", "strawberry" ]
+    },
+    {
+      "name": "Cookies and Cream",
+      "iceCreamFlavors": [ "vanilla" ],
+      "mixIns":  ["oreo pieces"]
     }
   ]
