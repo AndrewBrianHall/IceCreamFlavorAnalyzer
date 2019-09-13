@@ -11,6 +11,11 @@
     {
       "name": "Cookies and Cream",
       "iceCreamFlavors": [ "vanilla" ],
-      "mixIns":  ["oreo pieces"]
+      "mixIns": [ "oreo pieces" ]
+    },
+    {
+      "name": "Chocolate Chip",
+      "iceCreamFlavors": [ "vanilla" ],
+      "mixIns": [ "chocolate chips" ]
     }
   ]
